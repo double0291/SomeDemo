@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-
-import org.apache.http.protocol.HTTP;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -106,9 +106,11 @@ public class MainActivity extends Activity implements OnClickListener {
 	 * 利用ZipFile解压
 	 * 
 	 * @param zipFilePath
+	 *            压缩包所在路径
 	 * @param destination
+	 *            解压文件夹
 	 */
-	public void unzip2(String zipFilePath, String destination) {
+	public boolean unzip2(String zipFilePath, String destination) {
 		try {
 			File dir = new File(destination);
 			if (!dir.isDirectory()) {
@@ -129,7 +131,10 @@ public class MainActivity extends Activity implements OnClickListener {
 					}
 				} else {
 					InputStream in = zipFile.getInputStream(entry);
-					String str = new String(path.getBytes("8859_1"), HTTP.UTF_8);
+					CheckedInputStream csumi = new CheckedInputStream(in, new CRC32());
+
+					// 路径编码格式要跟压缩包提供方约定
+					String str = new String(path.getBytes("8859_1"), "GB2312");
 					File desFile = new File(str);
 
 					if (!desFile.exists()) {
@@ -143,9 +148,23 @@ public class MainActivity extends Activity implements OnClickListener {
 					OutputStream out = new FileOutputStream(desFile);
 					try {
 						byte[] buffer = new byte[BUFFER_SIZE];
-						int size;
-						while ((size = in.read(buffer)) > 0) {
-							out.write(buffer, 0, size);
+						long size = entry.getSize();
+						int length;
+
+						/*
+						 * 如果用 while((length = csumi.read(buffer, 0, BUFFER_SIZE)) > 0)的话，
+						 * 一旦碰到有问题的压缩包，会出现死循环，然后不停的写文件！！！
+						 * 所以要先获取压缩文件大小，再去不停减
+						 */
+						while (size > 0) {
+							length = csumi.read(buffer, 0, BUFFER_SIZE);
+							out.write(buffer, 0, length);
+							size -= length;
+						}
+
+						if (entry.getCrc() != csumi.getChecksum().getValue()) {
+							Log.d(TAG, "unzip fail, CRC32 error, " + entry.getName());
+							return false;
 						}
 					} finally {
 						if (in != null)
@@ -156,9 +175,11 @@ public class MainActivity extends Activity implements OnClickListener {
 			}
 
 			Log.d(TAG, "unzip success");
+			return true;
 		} catch (IOException e) {
 			Log.d(TAG, "unzip fail");
 		}
+		return false;
 	}
 
 }
