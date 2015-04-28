@@ -8,7 +8,6 @@ import android.os.Environment;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.doublechen.androidtest.util.ZipUtil;
 
@@ -16,7 +15,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	public static final String TAG = "AndroidTest";
 
 	private Button mBtn;
-	private TextView mTextView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,9 +23,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		mBtn = (Button) findViewById(R.id.button);
 		mBtn.setOnClickListener(this);
-
-		mTextView = (TextView) findViewById(R.id.textView);
-		mTextView.setText(hello());
 	}
 
 	@Override
@@ -42,12 +37,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		default:
 			break;
 		}
-	}
-
-	public native String hello();
-
-	static {
-		System.loadLibrary("Hello");
 	}
 
 }
