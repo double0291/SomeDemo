@@ -14,12 +14,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import com.doublechen.androidtest.ui.MainActivity;
-
 import android.util.Log;
 
 public class ZipUtil {
-    private static final String TAG = MainActivity.TAG;
+    private static final String TAG = Constants.TAG;
     private static final int BUFFER_SIZE = 1024;
 
     /**

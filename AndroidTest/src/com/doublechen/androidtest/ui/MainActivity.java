@@ -1,140 +1,97 @@
 package com.doublechen.androidtest.ui;
 
-import java.io.File;
-
-import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
+import android.app.ActionBar;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.os.Environment;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
-
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import com.doublechen.androidtest.R;
-import com.doublechen.androidtest.util.ZipUtil;
-import com.jni.ImageBlur;
+import com.doublechen.androidtest.base.BaseActivity;
 
-public class MainActivity extends Activity implements OnClickListener {
-	public static final String TAG = "AndroidTest";
-	private final String DOWNSCALE_FILTER = "downscale_filter";
+public class MainActivity extends BaseActivity implements ActionBar.TabListener {
+    ViewPager mViewPager;
+    MPagerAdapter mPagerAdapter;
 
-	private ImageView image;
-	private TextView text;
-	private CheckBox downScale;
-	private TextView statusText;
-	private Button mBtn;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+        mPagerAdapter = new MPagerAdapter(getSupportFragmentManager());
 
-		mBtn = (Button) findViewById(R.id.button);
-		mBtn.setOnClickListener(this);
+        final ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
 
-		image = (ImageView) findViewById(R.id.picture);
-		text = (TextView) findViewById(R.id.text);
-		image.setImageResource(R.drawable.picture);
-		statusText = addStatusText((ViewGroup) findViewById(R.id.controls));
-		addCheckBoxes((ViewGroup) findViewById(R.id.controls));
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                actionBar.setSelectedNavigationItem(position);
+            }
+        });
+        for (int i = 0; i < mPagerAdapter.getCount(); i++) {
+            actionBar.addTab(actionBar.newTab().setText(mPagerAdapter.getPageTitle(i)).setTabListener(this));
+        }
+        mViewPager.setCurrentItem(0);
+    }
 
-		if (savedInstanceState != null) {
-			downScale.setChecked(savedInstanceState.getBoolean(DOWNSCALE_FILTER));
-		}
-		applyBlur();
-	}
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.button:
-			String dir = Environment.getExternalStorageDirectory().getPath() + File.separator + "Music"
-					+ File.separator;
-			ZipUtil.unzip2(dir + "pic.zip", dir + "pic");
-			break;
+    }
 
-		default:
-			break;
-		}
-	}
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        mViewPager.setCurrentItem(tab.getPosition());
+    }
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		outState.putBoolean(DOWNSCALE_FILTER, downScale.isChecked());
-		super.onSaveInstanceState(outState);
-	}
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 
-	private void blur(Bitmap bkg, View view) {
-		long startMs = System.currentTimeMillis();
-		float scaleFactor = 1;
-		float radius = 20;
-		if (downScale.isChecked()) {
-			scaleFactor = 8;
-			radius = 5;
-		}
+    }
 
-		Bitmap overlay = Bitmap.createBitmap((int) (view.getMeasuredWidth() / scaleFactor),
-				(int) (view.getMeasuredHeight() / scaleFactor), Bitmap.Config.ARGB_8888);
-		Canvas canvas = new Canvas(overlay);
-		canvas.translate(-view.getLeft() / scaleFactor, -view.getTop() / scaleFactor);
-		canvas.scale(1 / scaleFactor, 1 / scaleFactor);
-		Paint paint = new Paint();
-		paint.setFlags(Paint.FILTER_BITMAP_FLAG);
-		canvas.drawBitmap(bkg, 0, 0, paint);
+    private class MPagerAdapter extends FragmentPagerAdapter {
 
-		overlay = ImageBlur.doBlur(overlay, (int) radius, true);
-		view.setBackgroundDrawable(new BitmapDrawable(getResources(), overlay));
-		statusText.setText(System.currentTimeMillis() - startMs + "ms");
-	}
+        public MPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-	private void applyBlur() {
-		image.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-			@Override
-			public boolean onPreDraw() {
-				image.getViewTreeObserver().removeOnPreDrawListener(this);
-				image.buildDrawingCache();
+        @Override
+        public Fragment getItem(int i) {
+            switch (i) {
+                case 0:
+                    return new OneFragment();
+                case 1:
+                    return new TwoFragment();
+                case 2:
+                    return new DrawableFragment();
+                default:
+                    return null;
+            }
+        }
 
-				Bitmap bmp = image.getDrawingCache();
-				blur(bmp, text);
-				return true;
-			}
-		});
-	}
+        @Override
+        public int getCount() {
+            return 3;
+        }
 
-	private void addCheckBoxes(ViewGroup container) {
-		downScale = new CheckBox(this);
-		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-				FrameLayout.LayoutParams.WRAP_CONTENT);
-		downScale.setLayoutParams(lp);
-		downScale.setText("Compressed Image");
-		downScale.setVisibility(View.VISIBLE);
-		downScale.setTextColor(0xFFFFFFFF);
-		downScale.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				applyBlur();
-			}
-		});
-		container.addView(downScale);
-	}
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "one";
+                case 1:
+                    return "two";
+                case 2:
+                    return "drawable";
+                default:
+                    return "";
+            }
+        }
 
-	private TextView addStatusText(ViewGroup container) {
-		TextView result = new TextView(this);
-		result.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT));
-		result.setTextColor(0xFFFFFFFF);
-		container.addView(result);
-		return result;
-	}
-
+    }
 }
