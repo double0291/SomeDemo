@@ -1,4 +1,4 @@
-package com.doublechen.androidtest;
+package com.doublechen.androidtest.ui;
 
 import java.io.File;
 
@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.doublechen.androidtest.R;
 import com.doublechen.androidtest.util.ZipUtil;
 import com.jni.ImageBlur;
 
