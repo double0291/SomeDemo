@@ -64,7 +64,7 @@ public class MainActivity extends BaseActivity implements ActionBar.TabListener 
         public Fragment getItem(int i) {
             switch (i) {
                 case 0:
-                    return new OneFragment();
+                    return new WebViewFragment();
                 case 1:
                     return new TwoFragment();
                 case 2:
@@ -83,7 +83,7 @@ public class MainActivity extends BaseActivity implements ActionBar.TabListener 
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "one";
+                    return "webview";
                 case 1:
                     return "two";
                 case 2:
