@@ -7,16 +7,29 @@ import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Application;
 import android.content.Context;
 
+import com.doublechen.androidtest.database.EntityManagerFactory;
+import com.doublechen.androidtest.util.Constants;
 import com.doublechen.androidtest.util.Logger;
 
 public class BaseApplication extends Application {
 	public static BaseApplication mApp;
+
+	private EntityManagerFactory mEntityManagerFactory;
 
 	@Override
 	public void onCreate() {
 		mApp = this;
 		super.onCreate();
 		Logger.d(getProcessName(), true); // 每个进程启动都会走到这里
+	}
+
+	public EntityManagerFactory getEntityManagerFactory() {
+		synchronized (this) {
+			if (mEntityManagerFactory == null) {
+				mEntityManagerFactory = new EntityManagerFactory(Constants.TAG);
+			}
+		}
+		return mEntityManagerFactory;
 	}
 
 	/**

@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 public class BaseActivity extends FragmentActivity {
-    protected BaseApplication app;
+    public BaseApplication app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
