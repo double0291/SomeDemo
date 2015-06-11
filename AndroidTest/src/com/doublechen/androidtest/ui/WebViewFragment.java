@@ -11,19 +11,19 @@ import android.widget.Button;
 
 import com.doublechen.androidtest.R;
 
-public class WebViewFragment extends Fragment implements OnClickListener{
+public class WebViewFragment extends Fragment implements OnClickListener {
 	Button mButton;
-	
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
-        
-        mButton = (Button) rootView.findViewById(R.id.button);
-        mButton.setOnClickListener(this);
 
-        // Bundle args = getArguments();
-        return rootView;
-    }
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View rootView = inflater.inflate(R.layout.fragment_webview, container, false);
+
+		mButton = (Button) rootView.findViewById(R.id.button);
+		mButton.setOnClickListener(this);
+
+		// Bundle args = getArguments();
+		return rootView;
+	}
 
 	@Override
 	public void onClick(View v) {

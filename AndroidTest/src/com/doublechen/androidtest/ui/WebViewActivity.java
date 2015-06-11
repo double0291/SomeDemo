@@ -31,8 +31,7 @@ public class WebViewActivity extends BaseActivity {
 				@Override
 				public boolean shouldOverrideUrlLoading(WebView view, String url) {
 					/* 返回true则系统WebView处理URL跳转，返回false则本WebView处理 */
-					if (TextUtils.isEmpty(url) || "about:blank;".equals(url)
-							|| "about:blank".equals(url)) {
+					if (TextUtils.isEmpty(url) || "about:blank;".equals(url) || "about:blank".equals(url)) {
 						return true;
 					}
 
