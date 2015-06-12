@@ -74,7 +74,7 @@ public class EntityManager {
         }
     }
 
-    public boolean insert(Entity entity) {
+    public boolean insertOrReplace(Entity entity, boolean isReplace) {
         if (isClosed) {
             throw new IllegalStateException(CLOSE_EXCEPTION_MSG);
         }
@@ -85,15 +85,23 @@ public class EntityManager {
             String table = entity.getTableName();
             entity.preWrite();
             try {
-                ContentValues cv = createContentValue(entity);
-                long id = db.insert(table, null, cv);
-                if (id == -1) {
-                    // 插入失败，可能是没有建表
-                    boolean isCreated = createTable(entity);
-                    if (isCreated) {
-                        id = db.insert(table, null, cv);
-                    }
-                }
+				ContentValues cv = createContentValue(entity);
+				long id = -1;
+				if (isReplace)
+					id = db.replace(table, null, cv);
+				else
+					id = db.insert(table, null, cv);
+
+				if (id == -1) {
+					// 插入失败，可能是没有建表
+					boolean isCreated = createTable(entity);
+					if (isCreated) {
+						if (isReplace)
+							id = db.replace(table, null, cv);
+						else
+							id = db.insert(table, null, cv);
+					}
+				}
 
                 // 这个时候还没插成功的话。。。
                 if (id != -1) {
