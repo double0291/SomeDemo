@@ -104,7 +104,7 @@ public class TwoFragment extends Fragment implements View.OnClickListener {
             Staff staff1 = new Staff();
             staff1.id = id * 2;
             staff1.name = "chen" + id;
-            em.insert(staff1);
+            em.insertOrReplace(staff1, true);
             /* sleep, to force another DBHelper do its job */
             try {
                 Thread.sleep(500);
@@ -115,7 +115,7 @@ public class TwoFragment extends Fragment implements View.OnClickListener {
             Staff staff2 = new Staff();
             staff2.id = id * 2 + 1;
             staff2.name = "double" + id;
-            em.insert(staff2);
+            em.insertOrReplace(staff2, true);
 
             Logger.d("insert finish", true);
         }
