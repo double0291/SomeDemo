@@ -265,8 +265,12 @@ public class EntityManager {
     }
 
     private Entity cursor2Entity(Cursor cursor, Class<? extends Entity> clazz) {
-        if (cursor == null || !cursor.moveToFirst())
+        if (cursor == null)
             return null;
+
+        if (cursor.isBeforeFirst()) {
+            cursor.moveToFirst();
+        }
 
         // 获取ID
         long id = -1;
