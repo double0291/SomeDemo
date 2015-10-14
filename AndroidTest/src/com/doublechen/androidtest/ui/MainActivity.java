@@ -66,7 +66,7 @@ public class MainActivity extends BaseActivity implements ActionBar.TabListener 
                 case 0:
                     return new WebViewFragment();
                 case 1:
-                    return new TwoFragment();
+                    return new DatabaseFragment();
                 case 2:
                     return new DrawableFragment();
                 default:
@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity implements ActionBar.TabListener 
                 case 0:
                     return "webview";
                 case 1:
-                    return "two";
+                    return "database";
                 case 2:
                     return "drawable";
                 default:
