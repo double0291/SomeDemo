@@ -64,10 +64,12 @@ public class MainActivity extends BaseActivity implements ActionBar.TabListener 
         public Fragment getItem(int i) {
             switch (i) {
                 case 0:
-                    return new WebViewFragment();
+                    return new AnimationFragment();
                 case 1:
-                    return new DatabaseFragment();
+                    return new WebViewFragment();
                 case 2:
+                    return new DatabaseFragment();
+                case 3:
                     return new DrawableFragment();
                 default:
                     return null;
@@ -76,17 +78,19 @@ public class MainActivity extends BaseActivity implements ActionBar.TabListener 
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "webview";
+                    return "animation";
                 case 1:
-                    return "database";
+                    return "webview";
                 case 2:
+                    return "database";
+                case 3:
                     return "drawable";
                 default:
                     return "";
